@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+</head>
+<body>
+    <form id="form" method="post">
+        <div>
+            <label for="initialcapital">Initial Capital</label>     
+            <input type="number" name="initialcapital" id="" placeholder="Enter your Capital">
+        </div>
+        <div>
+            <label for="requiredcapital">Required Capital</label>
+            <input type="number" name="requiredcapital" id="" value="19000">
+        </div>
+        <div>
+            <label for="stoploss">Stop Loss</label>
+            <input type="number" name="stoploss" id="" value="1500">
+        </div>
+        <div>
+            <label for="charges">Charges</label>
+            <input type="number" name="charges" id="" value="120">
+        </div>
+        <div>
+            <label for="profit">Profit</label>
+            <input type="number" name="profit" id="" placeholder="Enter your Profit of today">
+        </div>
+        <button href="#" id="submit-button" type="submit">Calculate</button>
+    </form>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script>
+        document.getElementById("form").addEventListener("submit", function (e) {
+        e.preventDefault(); // Prevent the default form submission
+        document.getElementById("submit-button").disabled = true;
+        var formData = new FormData(this);
+        var keyValuePairs = [];
+        for (var pair of formData.entries()) {
+            keyValuePairs.push(pair[0] + "=" + pair[1]);
+        }
+        var formDataString = keyValuePairs.join("&");
+        fetch(
+            "https://script.google.com/macros/s/AKfycby1JIN-Z6jR6uydWZ_1p8VFZpSVQ3mZQr-hFQRQ92XvTy8Rl0FhVz59Gi2N5NDhCt3e8g/exec",
+            {
+            redirect: "follow",
+            method: "POST",
+            body: formDataString,
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8",
+            },
+            }
+        )
+            .then(function (response) {
+            // Check if the request was successful
+            if (response) {
+                return response.json();
+            } else {
+                throw new Error("Failed to submit the form.");
+            }
+            })
+            .then(data => {
+            if (data.status === "success") {
+                Toastify({
+                text: data.message,
+                duration: 3000,
+                gravity: "bottom",
+                position: "right",
+                avatar: './src/img/tick.svg',
+                style: {
+                    background: "linear-gradient(to right, #333333, #000000)",
+                    borderRadius: "10px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "6px",
+                },
+                }).showToast();
+                document.getElementById("submit-button").disabled = false;
+                document.getElementById("form").reset();
+            } else {
+                throw new Error(data.message || "An unknown error occurred.");
+            }
+            })
+            .catch(error => {
+            console.error("Error!", error);
+
+            Toastify({
+                text: error.message || "An error occurred. Please try again.",
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                avatar: "./src/img/cross.svg",
+                style: {
+                background: "linear-gradient(to right, #333333, #000000)",
+                borderRadius: "10px",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                },
+            }).showToast();
+            document.getElementById("submit-button").disabled = false;
+            });
+        })
+    </script>
+</body>
+</html>
