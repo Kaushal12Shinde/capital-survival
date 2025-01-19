@@ -10,23 +10,23 @@
     <form id="form" method="post">
         <div>
             <label for="initialcapital">Initial Capital</label>     
-            <input type="number" name="initialcapital" id="" placeholder="Enter your Capital">
+            <input type="number" name="initialcapital" id="initialcapital" placeholder="Enter your Capital">
         </div>
         <div>
             <label for="requiredcapital">Required Capital</label>
-            <input type="number" name="requiredcapital" id="" value="19000">
+            <input type="number" name="requiredcapital" id="requiredcapital" value="19000">
         </div>
         <div>
             <label for="stoploss">Stop Loss</label>
-            <input type="number" name="stoploss" id="" value="1500">
+            <input type="number" name="stoploss" id="stoploss" value="1500">
         </div>
         <div>
             <label for="charges">Charges</label>
-            <input type="number" name="charges" id="" value="120">
+            <input type="number" name="charges" id="charges" value="120">
         </div>
         <div>
             <label for="profit">Profit</label>
-            <input type="number" name="profit" id="" placeholder="Enter your Profit of today">
+            <input type="number" name="profit" id="profit" placeholder="Enter your Profit of today">
         </div>
         <button href="#" id="submit-button" type="submit">Calculate</button>
     </form>
@@ -35,14 +35,54 @@
         document.getElementById("form").addEventListener("submit", function (e) {
         e.preventDefault(); // Prevent the default form submission
         document.getElementById("submit-button").disabled = true;
+
+
+        //logic for remaing field
+        var initialcapital = Number(document.getElementById("initialcapital").value);
+        var requiredcapital = Number(document.getElementById("requiredcapital").value);
+        var stoploss = Number(document.getElementById("stoploss").value);
+        var charges = Number(document.getElementById("charges").value);
+        var profit = Number(document.getElementById("profit").value);
+    
+
+        let remaingCapital = initialcapital - stoploss - charges;
+
+        if(profit){
+            remaingCapital += profit;
+        }
+
+        // logic for survival
+        let survivalDays = 1;
+        let capitalTemp = remaingCapital;
+        console.log( capitalTemp ,requiredcapital)
+        
+        do{
+            capitalTemp = capitalTemp - 1500 - 120;
+            survivalDays++;
+            console.log(capitalTemp)
+        } while(capitalTemp>=requiredcapital)
+
+        console.log(survivalDays);
+        const remainingEntries = {
+            'remainingcapital' : remaingCapital,
+            'survival' : survivalDays
+        }
+
         var formData = new FormData(this);
         var keyValuePairs = [];
+
         for (var pair of formData.entries()) {
             keyValuePairs.push(pair[0] + "=" + pair[1]);
         }
+
+        for ( let key in remainingEntries) {
+            keyValuePairs.push(key + "=" + remainingEntries[key]);
+        }
+
         var formDataString = keyValuePairs.join("&");
+        console.log(formDataString);
         fetch(
-            "https://script.google.com/macros/s/AKfycby1JIN-Z6jR6uydWZ_1p8VFZpSVQ3mZQr-hFQRQ92XvTy8Rl0FhVz59Gi2N5NDhCt3e8g/exec",
+            "https://script.google.com/macros/s/AKfycbxTe8Q-Y8NetVRJ4FO9B-qQn8h4FvyeNX8ap3yKYmQ_2DwjS0HRpHFtguciVcZDPxrCPg/exec",
             {
             redirect: "follow",
             method: "POST",
